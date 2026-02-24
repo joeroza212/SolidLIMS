@@ -1,0 +1,59 @@
+{
+    "app": {
+        "name": "سوليد ليمس",
+        "shortName": "ليمس"
+    },
+    "nav": {
+        "dashboard": "لوحة القيادة",
+        "patients": "المرضى",
+        "laboratory": "المختبر",
+        "testCategories": "فئات الاختبار",
+        "patientTests": "اختبارات المرضى",
+        "widalTests": "اختبار ويدال",
+        "finance": "المالية",
+        "accountTypes": "أنواع الحسابات",
+        "transactions": "المعاملات",
+        "ledgerAccounts": "حسابات دفتر الأستاذ",
+        "paymentMethods": "طرق الدفع",
+        "patientAmounts": "مبالغ المرضى",
+        "reports": "التقارير",
+        "inventory": "المخزون",
+        "products": "المنتجات",
+        "vendors": "الموردين",
+        "stock": "المخزون",
+        "stockInOut": "دخول/خروج المخزون",
+        "userManagement": "إدارة المستخدمين",
+        "users": "المستخدمين",
+        "roles": "الأدوار",
+        "roleUsers": "أدوار المستخدمين",
+        "menus": "القوائم",
+        "menuPermissions": "صلاحيات القوائم",
+        "settings": "الإعدادات",
+        "appSettings": "إعدادات التطبيق",
+        "generalSettings": "الإعدادات العامة",
+        "reportFormats": "تنسيقات التقارير",
+        "genders": "الأجناس",
+        "genderPrefixes": "بادئات الجنس",
+        "givenMethods": "طرق الإعطاء",
+        "statuses": "الحالات",
+        "notifications": "الإشعارات"
+    },
+    "auth": {
+        "login": "تسجيل الدخول",
+        "logout": "تسجيل الخروج",
+        "username": "اسم المستخدم",
+        "password": "كلمة المرور"
+    },
+    "common": {
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "delete": "حذف",
+        "edit": "تعديل",
+        "add": "إضافة جديد",
+        "search": "بحث...",
+        "actions": "إجراءات",
+        "loading": "جاري التحميل...",
+        "noData": "لا توجد بيانات",
+        "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا العنصر؟"
+    }
+}

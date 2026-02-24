@@ -1,0 +1,430 @@
+// Prisma Schema for SolidLIMS
+// Converted from ASP.NET Core EF Core models (29 entities)
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ─────────────────────────────────────────────
+// Base: All entities have auto-increment `id`
+// ─────────────────────────────────────────────
+
+model User {
+  id                    Int               @id @default(autoincrement())
+  userName              String            @db.VarChar(100)
+  password              String?           @db.VarChar(500)
+  email                 String?           @db.VarChar(40)
+  contactNumber         String?           @db.VarChar(20)
+  address               String?           @db.VarChar(200)
+  age                   Int?
+  dated                 DateTime?
+  canLogin              Boolean           @default(false)
+  isActive              Boolean?          @default(true)
+  isReportGiven         Boolean           @default(false)
+  reportGivenDate       DateTime?
+  collectionDate        DateTime?
+  changePasswordCode    String?           @db.VarChar(200)
+  dateAdded             DateTime?         @default(now())
+  addedBy               Int?
+  dateModified          DateTime?
+  modifiedBy            Int?
+
+  // Relations
+  genderId              Int
+  gender                Gender            @relation(fields: [genderId], references: [id])
+
+  prefixId              Int?
+  prefix                GenderPrefix?     @relation(fields: [prefixId], references: [id])
+
+  roleId                Int
+  role                  Role              @relation(fields: [roleId], references: [id])
+
+  givenMethodId         Int?
+  givenMethod           GivenMethod?      @relation(fields: [givenMethodId], references: [id])
+
+  referredByDoctorUserId Int?
+  referredByDoctor      User?             @relation("DoctorReferrals", fields: [referredByDoctorUserId], references: [id])
+
+  // Reverse relations
+  referredPatients      User[]            @relation("DoctorReferrals")
+  patientAmounts        PatientAmount[]
+  roleUsers             RoleUser[]
+  menuPermissions       MenuPermission[]
+  userTests             UserTest[]
+  permanentPatients     PermanentPatient[]
+  widalTests            WidalTest[]
+  patientHistories      PatientHistory[]
+
+  @@map("users")
+}
+
+model Role {
+  id          Int         @id @default(autoincrement())
+  name        String      @db.VarChar(100)
+  description String?     @db.VarChar(200)
+  isActive    Boolean?    @default(true)
+
+  users       User[]
+  roleUsers   RoleUser[]
+
+  @@map("roles")
+}
+
+model RoleUser {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  roleId      Int
+  role        Role      @relation(fields: [roleId], references: [id])
+  isActive    Boolean?  @default(true)
+
+  @@map("role_users")
+}
+
+model Gender {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(50)
+  isActive    Boolean?  @default(true)
+
+  users       User[]
+
+  @@map("genders")
+}
+
+model GenderPrefix {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(50)
+  isActive    Boolean?  @default(true)
+
+  users       User[]
+
+  @@map("gender_prefixes")
+}
+
+model GivenMethod {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  isActive    Boolean?  @default(true)
+
+  users       User[]
+
+  @@map("given_methods")
+}
+
+// ─────────────────────────────────────────────
+// Menu & Permissions
+// ─────────────────────────────────────────────
+
+model Menu {
+  id            Int             @id @default(autoincrement())
+  name          String          @db.VarChar(100)
+  url           String?         @db.VarChar(200)
+  icon          String?         @db.VarChar(100)
+  parentId      Int?
+  sortOrder     Int?
+  isActive      Boolean?        @default(true)
+
+  parent        Menu?           @relation("MenuHierarchy", fields: [parentId], references: [id])
+  children      Menu[]          @relation("MenuHierarchy")
+  menuPermissions MenuPermission[]
+
+  @@map("menus")
+}
+
+model MenuPermission {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  user          User      @relation(fields: [userId], references: [id])
+  menuId        Int
+  menu          Menu      @relation(fields: [menuId], references: [id])
+  canView       Boolean?  @default(false)
+  canInsert     Boolean?  @default(false)
+  canUpdate     Boolean?  @default(false)
+  canDelete     Boolean?  @default(false)
+  isActive      Boolean?  @default(true)
+
+  @@map("menu_permissions")
+}
+
+// ─────────────────────────────────────────────
+// Lab & Test
+// ─────────────────────────────────────────────
+
+model TestCategory {
+  id              Int             @id @default(autoincrement())
+  name            String          @db.VarChar(200)
+  shortName       String?         @db.VarChar(100)
+  price           Decimal?        @db.Decimal(18, 2)
+  normalValue     String?         @db.VarChar(500)
+  unit            String?         @db.VarChar(100)
+  parentId        Int?
+  sortOrder       Int?
+  isActive        Boolean?        @default(true)
+  isMachine       Boolean?        @default(false)
+  isHeader        Boolean?        @default(false)
+
+  parent          TestCategory?   @relation("TestCategoryHierarchy", fields: [parentId], references: [id])
+  children        TestCategory[]  @relation("TestCategoryHierarchy")
+  userTests       UserTest[]
+
+  @@map("test_categories")
+}
+
+model UserTest {
+  id                Int           @id @default(autoincrement())
+  patientUserId     Int
+  patient           User          @relation(fields: [patientUserId], references: [id])
+  testCategoryId    Int
+  testCategory      TestCategory  @relation(fields: [testCategoryId], references: [id])
+  result            String?       @db.VarChar(500)
+  isActive          Boolean?      @default(true)
+  dateAdded         DateTime?     @default(now())
+  addedBy           Int?
+
+  @@map("user_tests")
+}
+
+model WidalTest {
+  id                Int       @id @default(autoincrement())
+  patientUserId     Int
+  patient           User      @relation(fields: [patientUserId], references: [id])
+  sTyphi_O          String?   @db.VarChar(100)
+  sTyphi_H          String?   @db.VarChar(100)
+  sParaTyphi_AO     String?   @db.VarChar(100)
+  sParaTyphi_AH     String?   @db.VarChar(100)
+  sParaTyphi_BO     String?   @db.VarChar(100)
+  sParaTyphi_BH     String?   @db.VarChar(100)
+  isActive          Boolean?  @default(true)
+  dateAdded         DateTime? @default(now())
+  addedBy           Int?
+
+  @@map("widal_tests")
+}
+
+// ─────────────────────────────────────────────
+// Patient
+// ─────────────────────────────────────────────
+
+model PermanentPatient {
+  id                Int       @id @default(autoincrement())
+  patientUserId     Int
+  patient           User      @relation(fields: [patientUserId], references: [id])
+  discount          Decimal?  @db.Decimal(18, 2)
+  remarks           String?   @db.VarChar(500)
+  isActive          Boolean?  @default(true)
+  dateAdded         DateTime? @default(now())
+  addedBy           Int?
+
+  @@map("permanent_patients")
+}
+
+model PatientAmount {
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  user              User      @relation(fields: [userId], references: [id])
+  totalAmount       Decimal?  @db.Decimal(18, 2)
+  paidAmount        Decimal?  @db.Decimal(18, 2)
+  discount          Decimal?  @db.Decimal(18, 2)
+  dueAmount         Decimal?  @db.Decimal(18, 2)
+  remarks           String?   @db.VarChar(500)
+  isActive          Boolean?  @default(true)
+  dateAdded         DateTime? @default(now())
+  addedBy           Int?
+
+  @@map("patient_amounts")
+}
+
+model PatientHistory {
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  user              User      @relation(fields: [userId], references: [id])
+  description       String?   @db.VarChar(500)
+  isActive          Boolean?  @default(true)
+  dateAdded         DateTime? @default(now())
+
+  @@map("patient_histories")
+}
+
+// ─────────────────────────────────────────────
+// Finance
+// ─────────────────────────────────────────────
+
+model AccountType {
+  id            Int             @id @default(autoincrement())
+  name          String          @db.VarChar(100)
+  description   String?         @db.VarChar(200)
+  isActive      Boolean?        @default(true)
+
+  ledgerAccounts LedgerAccount[]
+
+  @@map("account_types")
+}
+
+model LedgerAccount {
+  id              Int           @id @default(autoincrement())
+  name            String        @db.VarChar(100)
+  description     String?       @db.VarChar(200)
+  accountTypeId   Int
+  accountType     AccountType   @relation(fields: [accountTypeId], references: [id])
+  openingBalance  Decimal?      @db.Decimal(18, 2)
+  isActive        Boolean?      @default(true)
+  dateAdded       DateTime?     @default(now())
+  addedBy         Int?
+
+  transactions    Transaction[]
+
+  @@map("ledger_accounts")
+}
+
+model Transaction {
+  id              Int           @id @default(autoincrement())
+  ledgerAccountId Int
+  ledgerAccount   LedgerAccount @relation(fields: [ledgerAccountId], references: [id])
+  debit           Decimal?      @db.Decimal(18, 2)
+  credit          Decimal?      @db.Decimal(18, 2)
+  description     String?       @db.VarChar(500)
+  transactionDate DateTime?
+  voucherNo       String?       @db.VarChar(100)
+  referenceNo     String?       @db.VarChar(100)
+  isActive        Boolean?      @default(true)
+  dateAdded       DateTime?     @default(now())
+  addedBy         Int?
+
+  @@map("transactions")
+}
+
+model PaymentMethod {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  isActive    Boolean?  @default(true)
+
+  @@map("payment_methods")
+}
+
+// ─────────────────────────────────────────────
+// Inventory
+// ─────────────────────────────────────────────
+
+model Product {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(200)
+  description   String?   @db.VarChar(500)
+  unit          String?   @db.VarChar(50)
+  minStock      Int?
+  isActive      Boolean?  @default(true)
+
+  stocks        Stock[]
+
+  @@map("products")
+}
+
+model Vendor {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(200)
+  contactNumber String?   @db.VarChar(20)
+  address       String?   @db.VarChar(500)
+  isActive      Boolean?  @default(true)
+
+  stocks        Stock[]
+
+  @@map("vendors")
+}
+
+model Stock {
+  id            Int       @id @default(autoincrement())
+  productId     Int
+  product       Product   @relation(fields: [productId], references: [id])
+  vendorId      Int?
+  vendor        Vendor?   @relation(fields: [vendorId], references: [id])
+  quantity      Int?
+  unitPrice     Decimal?  @db.Decimal(18, 2)
+  totalPrice    Decimal?  @db.Decimal(18, 2)
+  batchNo       String?   @db.VarChar(100)
+  expiryDate    DateTime?
+  remarks       String?   @db.VarChar(500)
+  isActive      Boolean?  @default(true)
+  dateAdded     DateTime? @default(now())
+  addedBy       Int?
+
+  @@map("stocks")
+}
+
+model StockInOut {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(200)
+  isActive      Boolean?  @default(true)
+
+  @@map("stock_in_outs")
+}
+
+// ─────────────────────────────────────────────
+// System & Settings
+// ─────────────────────────────────────────────
+
+model Status {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  isActive    Boolean?  @default(true)
+
+  @@map("statuses")
+}
+
+model AppSetting {
+  id                Int       @id @default(autoincrement())
+  appName           String?   @db.VarChar(200)
+  appShortName      String?   @db.VarChar(50)
+  appVersion        String?   @db.VarChar(50)
+  footerText        String?   @db.VarChar(500)
+  skin              String?   @db.VarChar(100)
+  logo              String?   @db.VarChar(200)
+  isToggleSidebar   Boolean?  @default(false)
+  isToggleRightSidebar Boolean? @default(false)
+  isFixedLayout     Boolean?  @default(false)
+  isBoxedLayout     Boolean?  @default(false)
+  isActive          Boolean?  @default(true)
+
+  @@map("app_settings")
+}
+
+model GeneralSetting {
+  id            Int       @id @default(autoincrement())
+  settingKey    String    @db.VarChar(100)
+  settingValue  String?   @db.VarChar(500)
+  description   String?   @db.VarChar(200)
+  isActive      Boolean?  @default(true)
+
+  @@map("general_settings")
+}
+
+model Notification {
+  id            Int       @id @default(autoincrement())
+  title         String?   @db.VarChar(200)
+  message       String?   @db.VarChar(500)
+  url           String?   @db.VarChar(200)
+  icon          String?   @db.VarChar(100)
+  isRead        Boolean?  @default(false)
+  userId        Int?
+  isActive      Boolean?  @default(true)
+  dateAdded     DateTime? @default(now())
+
+  @@map("notifications")
+}
+
+model ReportFormat {
+  id                Int       @id @default(autoincrement())
+  name              String?   @db.VarChar(200)
+  headerLeft        String?   @db.Text
+  headerCenter      String?   @db.Text
+  headerRight       String?   @db.Text
+  footerLeft        String?   @db.Text
+  footerCenter      String?   @db.Text
+  footerRight       String?   @db.Text
+  isActive          Boolean?  @default(true)
+
+  @@map("report_formats")
+}

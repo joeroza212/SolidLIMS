@@ -1,0 +1,59 @@
+{
+    "app": {
+        "name": "SolidLIMS",
+        "shortName": "LIMS"
+    },
+    "nav": {
+        "dashboard": "Dasbor",
+        "patients": "Pasien",
+        "laboratory": "Laboratorium",
+        "testCategories": "Kategori Tes",
+        "patientTests": "Tes Pasien",
+        "widalTests": "Tes Widal",
+        "finance": "Keuangan",
+        "accountTypes": "Jenis Akun",
+        "transactions": "Transaksi",
+        "ledgerAccounts": "Akun Buku Besar",
+        "paymentMethods": "Metode Pembayaran",
+        "patientAmounts": "Jumlah Pasien",
+        "reports": "Laporan",
+        "inventory": "Inventaris",
+        "products": "Produk",
+        "vendors": "Vendor",
+        "stock": "Stok",
+        "stockInOut": "Stok Masuk/Keluar",
+        "userManagement": "Manajemen Pengguna",
+        "users": "Pengguna",
+        "roles": "Peran",
+        "roleUsers": "Peran Pengguna",
+        "menus": "Menu",
+        "menuPermissions": "Hak Akses Menu",
+        "settings": "Pengaturan",
+        "appSettings": "Pengaturan Aplikasi",
+        "generalSettings": "Pengaturan Umum",
+        "reportFormats": "Format Laporan",
+        "genders": "Jenis Kelamin",
+        "genderPrefixes": "Gelar",
+        "givenMethods": "Metode Pemberian",
+        "statuses": "Status",
+        "notifications": "Notifikasi"
+    },
+    "auth": {
+        "login": "Masuk",
+        "logout": "Keluar",
+        "username": "Nama Pengguna",
+        "password": "Kata Sandi"
+    },
+    "common": {
+        "save": "Simpan",
+        "cancel": "Batal",
+        "delete": "Hapus",
+        "edit": "Ubah",
+        "add": "Tambah Baru",
+        "search": "Cari...",
+        "actions": "Aksi",
+        "loading": "Memuat...",
+        "noData": "Data tidak ditemukan",
+        "confirmDelete": "Apakah Anda yakin ingin menghapus item ini?"
+    }
+}
